@@ -1,0 +1,199 @@
+/*
+* Copyright 2009-2017 C3 IoT, Inc. All Rights Reserved.
+* This material, including without limitation any software, is the confidential trade secret
+* and proprietary information of C3 IoT and its licensors. Reproduction, use and/or distribution
+* of this material in any form is strictly prohibited except as set forth in a written
+* license agreement with C3 IoT and/or its authorized distributors.
+* This product may be covered by one or more U.S. patents or pending patent applications.
+~*/
+
+ui module smartbulb {
+    page Home {
+        "id": "smartbulb.Home",
+        "name": "Home",
+        "template": "smartbulb.Dashboard1x4",
+        "thumbnail": "template-thumbs/120/ui.Dashboard2x2.gif",
+        "title": "Home",
+        "url": "home",
+        "components": [
+            {
+                "id": "SideMenu",
+                "component": "smartbulb.Menu",
+                "renderTo": "#side-menu",
+                "activeItem": "smartbulb",
+                "menu": [
+                    {
+                        "items": [
+                            {
+                                "id": "smartbulb",
+                                "iconImageUrl": "/assets/images/analytics.svg",
+                                "title": "Smart Bulb Failure Prediction",
+                                "appId": "smartbulb",
+                                "pageId": "Home"
+                            }
+                        ]
+                    },
+                    {
+                        "footer": true,
+                        "items": [
+                            {
+                                "id": "settings",
+                                "iconImageUrl": "/assets/images/menu/user_options.svg",
+                                "title": "User Options",
+                                "url": "#",
+                                "linkClass": "settings"
+                            }
+                        ]
+                    }
+                ],
+                "behavior": [
+                    {
+                        "query": "$ a[href!='#']",
+                        "trigger": "click",
+                        "action": {
+                            "type": "Navigate"
+                        }
+                    },
+                    {
+                        "query": "$ a.settings",
+                        "trigger": "click",
+                        "action": {
+                            "type": "ShowUserSettingsPopover",
+                            "options": {
+                                "about": true,
+                                "profile": true,
+                                "logout": true
+                            }
+                        }
+                    }
+                ]
+            },
+            {
+                "id": "Map",
+                "component": "Map",
+                "icon": "map-marker",
+                "name": "Map",
+                "box": true,
+                "title": "Status Map",
+                "autoLoadData": true,
+                "lat": "latitude",
+                "lng": "longitude",
+                "autocenter": true,
+                "cluster": false,
+                "mapConfig": {
+                    "mapTypeId": "roadmap"
+                },
+                "components": [
+                    {
+                        "component": "Tooltip",
+                        "id": "PhantomTooltip",
+                        "renderTo": ".phantom-tooltip"
+                    }
+                ],
+                "renderTo": "#RightColRow1",
+                "height": 556,
+                "markerColors": [
+                    {
+                        "id": "1",
+                        "color": "#fc3d00",
+                        "display": "if 'currentPrediction.prediction > 0.5' then color = #fc3d00",
+                        "field": "currentPrediction.prediction",
+                        "value": "0.5",
+                        "comparator": ">"
+                    }
+                ],
+                "useInfoWindowTpl": false,
+                "data": {
+                    "collection": "smartbulb.Bulbs"
+                },
+                "allowGeoFilter": false,
+                "showNumberOfRecords": false
+            },
+            {
+                "id": "Grid",
+                "component": "KendoGrid",
+                "icon": "align-justify",
+                "name": "Grid",
+                "box": true,
+                "paginate": true,
+                "title": "Lightbulb Details",
+                "data": {
+                    "collection": "smartbulb.Bulbs"
+                },
+                "filterable": false,
+                "renderTo": "#RightColRow2",
+                "height": 556,
+                "titleUrl": null,
+                "aggregate": null,
+                "small": false,
+                "checkBoxes": false,
+                "columns": [
+                    {
+                        "id": "id",
+                        "field": "id",
+                        "label": "Bulb ID"
+                    },
+                    {
+                        "id": "bulbType",
+                        "field": "bulbType",
+                        "label": "Bulb Type"
+                    },
+                    {
+                        "id": "manufacturer.id",
+                        "field": "manufacturer.id",
+                        "label": "Manufacturer"
+                    },
+                    {
+                        "id": "startDate",
+                        "field": "startDate",
+                        "label": "Start Date",
+                        "format": "time"
+                    },
+                    {
+                        "id": "currentPrediction.prediction",
+                        "field": "currentPrediction.prediction",
+                        "label": "Risk Score",
+                        "format": "humanize"
+                    }
+                ]
+            },
+            {
+                "id": "FilterPanel",
+                "component": "FilterPanel",
+                "icon": "lightbulb",
+                "name": "FilterPanel",
+                "box": false,
+                "title": "Filter",
+                "filterForm": {
+                    "component": "FilterForm",
+                    "filters": [
+                        {
+                            "id": "manufacturer.id",
+                            "field": "manufacturer.id",
+                            "label": "Manufacturer",
+                            "dataType": "string",
+                            "comparator": false,
+                            "component": "field.Text"
+                        },
+                        {
+                            "id": "bulbType",
+                            "field": "bulbType",
+                            "label": "Bulb type",
+                            "dataType": "string",
+                            "comparator": false,
+                            "component": "field.Text"
+                        }
+                    ],
+                    "id": "FilterForm"
+                },
+                "renderTo": "#LeftCol",
+                "height": 556,
+                "data": {
+                    "collection": "smartbulb.Bulbs"
+                },
+                "geoFilterText": "Geographical Filtering",
+                "allowGeoFilter": false
+            }
+        ]
+    }
+}
